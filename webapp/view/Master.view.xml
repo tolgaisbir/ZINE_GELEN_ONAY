@@ -27,9 +27,7 @@
 				</items>
 			</List>
 		</semantic:content>
-		<semantic:addAction>
-			<semantic:AddAction id="addButton" enabled="{appView>/addEnabled}" press="onAdd"/>
-		</semantic:addAction>
+		
 		<semantic:sort>
 			<semantic:SortSelect id="sort" selectedKey="{masterView>/sortBy}" change="onSort">
 				<core:Item id="masterSort1" key="Cname" text="{i18n>masterSort1}"/>
