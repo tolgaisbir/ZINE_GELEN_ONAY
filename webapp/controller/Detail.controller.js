@@ -279,21 +279,25 @@ _deleteOneEntity: function (sPath, fnSuccess, fnFailed) {
 		/**
 	*@memberOf ZINE.controller.Detail
 	*/
-	PDFViewer.prototype.setPDFurl = function (sVal) {
-      //Now get the iFrame element inside the 
-      var iframeID = this.sId + "iFrame";
 
-      //Now update the value and also set the source in the iFrame element
-      //With the URL to the PDF
-      if (sVal) {
-          this.setProperty("PDFurl", sVal, true);
-  
-          //Now set the iFrame src to the URL
-          jQuery.sap.byId(iframeID).attr('src', sVal)
-    }
-};
 PDFview: function () {
-		var objPDF = new PDFViewer("myPDF");
+			var that = this,
+				oModel = this.getModel();
+
+			this.getModel("appView").setProperty("/busy", true);
+			if (this._oViewModel.getProperty("/mode") === "edit") {
+				// attach to the request completed event of the batch
+				oModel.attachEventOnce("batchRequestCompleted", function(oEvent) {
+					var oParams = oEvent.getParameters();
+					if (oParams.success) {
+						that._fnUpdateSuccess();
+					} else {
+						that._fnEntityCreationFailed();
+					}
+				});
+			}
+			oModel.submitChanges();
+			
 		}
 	});
 });

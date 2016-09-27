@@ -7,7 +7,7 @@
 					<IconTabFilter id="iconTabBarFilter1" icon="sap-icon://hint" tooltip="{i18n>detailIconTabBarInfo}"/>
 					<IconTabFilter id="iconTabBarFilter2" icon="sap-icon://attachment" tooltip="{i18n>detailIconTabBarAttachments}">
 					    <content>
-					        <Button text="PDF Görüntüle" width="150px" id="__button0"/>
+					        <Button text="PDF Görüntüle" width="150px" id="__button0" press="PDFview"/>
 					    </content>
 					</IconTabFilter>
 				</items>
