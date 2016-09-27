@@ -5,7 +5,7 @@
 			<Bar id="headerBar">
 				<contentMiddle>
 					<SearchField id="searchField" showRefreshButton="{= !${device>/support/touch} }" tooltip="{i18n>masterSearchTooltip}" width="100%"
-						search="onSearch"></SearchField>
+						search="onSearch" placeholder="Arama"></SearchField>
 				</contentMiddle>
 			</Bar>
 		</semantic:subHeader>
