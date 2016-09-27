@@ -12,7 +12,7 @@
 		<semantic:content>
 			<PullToRefresh id="pullToRefresh" visible="{device>/support/touch}" refresh="onRefresh"/>
 			<!-- For client side filtering add this to the items attribute:  parameters: {operationMode: 'Client'}}" -->
-			<List id="list" items="{ path: '/GELENONAYSet', sorter: { path: 'Chtam', descending: false }, groupHeaderFactory: '.createGroupHeader' }"
+			<List id="list" items="{ path: '/GELENONAYSet', sorter: { path: 'Cname', descending: false }, groupHeaderFactory: '.createGroupHeader' }"
 				busyIndicatorDelay="{masterView>/delay}" noDataText="{masterView>/noDataText}"
 				mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}" growing="true" growingScrollToLoad="true"
 				updateFinished="onUpdateFinished" selectionChange="onSelectionChange">
@@ -22,7 +22,7 @@
 					</Toolbar>
 				</infoToolbar>
 				<items>
-					<ObjectListItem type="{= ${device>/system/phone} ? 'Active' : 'Inactive'}" press="onSelectionChange" title="{Chtam}"
+					<ObjectListItem type="{= ${device>/system/phone} ? 'Active' : 'Inactive'}" press="onSelectionChange" title="{Cname}"
 						number="{ path: 'Lneam', formatter: '.formatter.currencyValue' }" numberUnit="{Dccur}"></ObjectListItem>
 				</items>
 			</List>
@@ -32,7 +32,7 @@
 		</semantic:addAction>
 		<semantic:sort>
 			<semantic:SortSelect id="sort" selectedKey="{masterView>/sortBy}" change="onSort">
-				<core:Item id="masterSort1" key="Chtam" text="{i18n>masterSort1}"/>
+				<core:Item id="masterSort1" key="Cname" text="{i18n>masterSort1}"/>
 				<core:Item id="masterSort2" key="Lneam" text="{i18n>masterSort2}"/>
 			</semantic:SortSelect>
 		</semantic:sort>
