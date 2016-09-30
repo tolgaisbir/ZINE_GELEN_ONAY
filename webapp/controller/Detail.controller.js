@@ -281,23 +281,19 @@ _deleteOneEntity: function (sPath, fnSuccess, fnFailed) {
 	*/
 
 PDFview: function () {
-			var that = this,
-				oModel = this.getModel();
-
-			this.getModel("appView").setProperty("/busy", true);
-			if (this._oViewModel.getProperty("/mode") === "edit") {
-				// attach to the request completed event of the batch
-				oModel.attachEventOnce("batchRequestCompleted", function(oEvent) {
-					var oParams = oEvent.getParameters();
-					if (oParams.success) {
-						that._fnUpdateSuccess();
-					} else {
-						that._fnEntityCreationFailed();
-					}
-				});
-			}
-			oModel.submitChanges();
-			
+			var oModel = this.getOwnerComponent().getModel();			
+			var oData = this.getSource().getBindingContext().getObject();
+			oData.EstatTx = "PDFSHOW";
+			var sUrl = "/Products( " + oData.PRNUM + ")";
+			 oModel.update(sUrl, oData, {
+			 		        merge: true,
+			success : jQuery.proxy(function(mResponse) {
+				MessageBox.show("success");
+			}, this),
+			error : jQuery.proxy(function(mResponse) {
+				MessageBox.show("error");
+			}, this)
+		});
 		}
 	});
 });
