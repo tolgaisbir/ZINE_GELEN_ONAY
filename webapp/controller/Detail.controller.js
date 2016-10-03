@@ -43,7 +43,8 @@ onShareEmailPress: function () {
 		 * @public
 		 */
 onShareInJamPress: function () {
-			var oViewModel = this.getModel("detailView"), oShareDialog = sap.ui.getCore().createComponent({
+			var oViewModel = this.getModel("detailView"), 
+			oShareDialog = sap.ui.getCore().createComponent({
 					name: "sap.collaboration.components.fiori.sharing.dialog",
 					settings: {
 						object: {
@@ -60,7 +61,9 @@ onShareInJamPress: function () {
 		 * @private
 		 */
 onListUpdateFinished: function (oEvent) {
-			var sTitle, iTotalItems = oEvent.getParameter("total"), oViewModel = this.getModel("detailView");
+			var sTitle, 
+				iTotalItems = oEvent.getParameter("total"), 
+				oViewModel = this.getModel("detailView");
 			// only update the counter if the length is final
 if (this.byId("lineItemsList").getBinding("items").isLengthFinal()) {
 				if (iTotalItems) {
@@ -79,7 +82,7 @@ sTitle = this.getResourceBundle().getText("detailLineItemTableHeading");
 		 */
 onDelete: function () {
 			var that = this;
-			var oViewModel = this.getModel("detailView"), sPath = oViewModel.getProperty("/sObjectPath"), sObjectHeader = this._oODataModel.getProperty(sPath + "/Chtam"), sQuestion = this._oResourceBundle.getText("deleteText", sObjectHeader), sSuccessMessage = this._oResourceBundle.getText("deleteSuccess", sObjectHeader);
+			var oViewModel = this.getModel("detailView"), sPath = oViewModel.getProperty("/sObjectPath"), sObjectHeader = this._oODataModel.getProperty(sPath + "/Cname"), sQuestion = this._oResourceBundle.getText("deleteText", sObjectHeader), sSuccessMessage = this._oResourceBundle.getText("deleteSuccess", sObjectHeader);
 			var fnMyAfterDeleted = function () {
 				MessageToast.show(sSuccessMessage);
 				oViewModel.setProperty("/busy", false);
@@ -151,7 +154,10 @@ oViewModel.setProperty("/busy", false);
 		 * @private
 		 */
 _onBindingChange: function () {
-			var oView = this.getView(), oElementBinding = oView.getElementBinding(), oViewModel = this.getModel("detailView"), oAppViewModel = this.getModel("appView");
+			var oView = this.getView(), 
+				oElementBinding = oView.getElementBinding(), 
+				oViewModel = this.getModel("detailView"), 
+				oAppViewModel = this.getModel("appView");
 			// No data for the binding
 if (!oElementBinding.getBoundContext()) {
 				this.getRouter().getTargets().display("detailObjectNotFound");
@@ -160,7 +166,11 @@ if (!oElementBinding.getBoundContext()) {
 this.getOwnerComponent().oListSelector.clearMasterListSelection();
 				return;
 			}
-			var sPath = oElementBinding.getBoundContext().getPath(), oResourceBundle = this.getResourceBundle(), oObject = oView.getModel().getObject(sPath), sObjectId = oObject.Prnum, sObjectName = oObject.Chtam;
+			var sPath = oElementBinding.getBoundContext().getPath(), 
+				oResourceBundle = this.getResourceBundle(), 
+				oObject = oView.getModel().getObject(sPath), 
+				sObjectId = oObject.Prnum, 
+				sObjectName = oObject.Chtam;
 			oViewModel.setProperty("/sObjectId", sObjectId);
 			oViewModel.setProperty("/sObjectPath", sPath);
 			oAppViewModel.setProperty("/itemToSelect", sPath);
@@ -281,11 +291,11 @@ _deleteOneEntity: function (sPath, fnSuccess, fnFailed) {
 	*/
 
 PDFview: function () {
-			var oModel = this.getOwnerComponent().getModel();			
-			var oData = this.getSource().getBindingContext().getObject();
+			var oViewModel = this.getModel("detailView");
+			var sUrl = oViewModel.getProperty("/sObjectPath");
+			var oData = oViewModel.getObject(sUrl); 
 			oData.EstatTx = "PDFSHOW";
-			var sUrl = "/Products( " + oData.PRNUM + ")";
-			 oModel.update(sUrl, oData, {
+			 this._oODataModel.update(sUrl, oData, {
 			 		        merge: true,
 			success : jQuery.proxy(function(mResponse) {
 				MessageBox.show("success");
