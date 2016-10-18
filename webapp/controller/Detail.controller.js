@@ -82,7 +82,9 @@ sTitle = this.getResourceBundle().getText("detailLineItemTableHeading");
 		 */
 onDelete: function () {
 			var that = this;
-			var oViewModel = this.getModel("detailView"), sPath = oViewModel.getProperty("/sObjectPath"), sObjectHeader = this._oODataModel.getProperty(sPath + "/Cname"), sQuestion = this._oResourceBundle.getText("deleteText", sObjectHeader), sSuccessMessage = this._oResourceBundle.getText("deleteSuccess", sObjectHeader);
+			var oViewModel = this.getModel("detailView"), sPath = oViewModel.getProperty("/sObjectPath"), 
+			sObjectHeader = this._oODataModel.getProperty(sPath + "/Cname"), 
+			sQuestion = this._oResourceBundle.getText("deleteText", sObjectHeader), sSuccessMessage = this._oResourceBundle.getText("deleteSuccess", sObjectHeader);
 			var fnMyAfterDeleted = function () {
 				MessageToast.show(sSuccessMessage);
 				oViewModel.setProperty("/busy", false);
