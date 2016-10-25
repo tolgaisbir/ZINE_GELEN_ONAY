@@ -5,18 +5,18 @@ sap.ui.define([
 	"ZINE/model/formatter",
 	"sap/m/MessageBox",
 	"sap/m/MessageToast"
-], function (BaseController, JSONModel, formatter, MessageBox, MessageToast) {
+], function(BaseController, JSONModel, formatter, MessageBox, MessageToast) {
 	"use strict";
 	return BaseController.extend("ZINE.controller.Detail", {
 		formatter: formatter,
 		/* =========================================================== */
 		/* lifecycle methods                                           */
 		/* =========================================================== */
-onInit: function () {
+		onInit: function() {
 			// Model used to manipulate control states. The chosen values make sure,
 			// detail page is busy indication immediately so there is no break in
 			// between the busy indication for loading the view's meta data
-var oViewModel = new JSONModel({
+			var oViewModel = new JSONModel({
 				busy: false,
 				delay: 0,
 				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
@@ -26,51 +26,19 @@ var oViewModel = new JSONModel({
 			this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
 			this._oODataModel = this.getOwnerComponent().getModel();
 			this._oResourceBundle = this.getResourceBundle();
+			this.sEntityPath = this.getModel("detailView").getProperty("/sObjectPath")
 		},
-		/* =========================================================== */
-		/* event handlers                                              */
-		/* =========================================================== */
-		/**
-		 * Event handler when the share by E-Mail button has been clicked
-		 * @public
-		 */
-onShareEmailPress: function () {
-			var oViewModel = this.getModel("detailView");
-			sap.m.URLHelper.triggerEmail(null, oViewModel.getProperty("/shareSendEmailSubject"), oViewModel.getProperty("/shareSendEmailMessage"));
-		},
-		/**
-		 * Event handler when the share in JAM button has been clicked
-		 * @public
-		 */
-onShareInJamPress: function () {
-			var oViewModel = this.getModel("detailView"), 
-			oShareDialog = sap.ui.getCore().createComponent({
-					name: "sap.collaboration.components.fiori.sharing.dialog",
-					settings: {
-						object: {
-							id: location.href,
-							share: oViewModel.getProperty("/shareOnJamTitle")
-						}
-					}
-				});
-			oShareDialog.open();
-		},
-		/**
-		 * Updates the item count within the line item table's header
-		 * @param {object} oEvent an event containing the total number of items in the list
-		 * @private
-		 */
-onListUpdateFinished: function (oEvent) {
-			var sTitle, 
-				iTotalItems = oEvent.getParameter("total"), 
+		onListUpdateFinished: function(oEvent) {
+			var sTitle,
+				iTotalItems = oEvent.getParameter("total"),
 				oViewModel = this.getModel("detailView");
 			// only update the counter if the length is final
-if (this.byId("lineItemsList").getBinding("items").isLengthFinal()) {
+			if (this.byId("lineItemsList").getBinding("items").isLengthFinal()) {
 				if (iTotalItems) {
 					sTitle = this.getResourceBundle().getText("detailLineItemTableHeadingCount", [iTotalItems]);
 				} else {
 					//Display 'Line Items' instead of 'Line items (0)'
-sTitle = this.getResourceBundle().getText("detailLineItemTableHeading");
+					sTitle = this.getResourceBundle().getText("detailLineItemTableHeading");
 				}
 				oViewModel.setProperty("/lineItemListTitle", sTitle);
 			}
@@ -80,25 +48,29 @@ sTitle = this.getResourceBundle().getText("detailLineItemTableHeading");
 		 * @function
 		 * @public
 		 */
-onDelete: function () {
+		onDelete: function() {
 			var that = this;
-			var oViewModel = this.getModel("detailView"), sPath = oViewModel.getProperty("/sObjectPath"), 
-			sObjectHeader = this._oODataModel.getProperty(sPath + "/Cname"), 
-			sQuestion = this._oResourceBundle.getText("deleteText", sObjectHeader), sSuccessMessage = this._oResourceBundle.getText("deleteSuccess", sObjectHeader);
-			var fnMyAfterDeleted = function () {
+			var oViewModel = this.getModel("detailView"),
+				sPath = oViewModel.getProperty("/sObjectPath"),
+				sObjectHeader = this._oODataModel.getProperty(sPath + "/Cname"),
+				sQuestion = this._oResourceBundle.getText("deleteText", sObjectHeader),
+				sSuccessMessage = this._oResourceBundle.getText("deleteSuccess", sObjectHeader);
+			var fnMyAfterDeleted = function() {
 				MessageToast.show(sSuccessMessage);
 				oViewModel.setProperty("/busy", false);
 				var oNextItemToSelect = that.getOwnerComponent().oListSelector.findNextItem(sPath);
-				that.getModel("appView").setProperty("/itemToSelect", oNextItemToSelect.getBindingContext().getPath());	//save last deleted
+				that.getModel("appView").setProperty("/itemToSelect", oNextItemToSelect.getBindingContext().getPath()); //save last deleted
 			};
-			this._confirmDeletionByUser({ question: sQuestion }, [sPath], fnMyAfterDeleted);
+			this._confirmDeletionByUser({
+				question: sQuestion
+			}, [sPath], fnMyAfterDeleted);
 		},
 		/**
 		 * Event handler (attached declaratively) for the view edit button. Open a view to enable the user update the selected item. 
 		 * @function
 		 * @public
 		 */
-onEdit: function () {
+		onEdit: function() {
 			this.getModel("appView").setProperty("/addEnabled", false);
 			var sObjectPath = this.getView().getElementBinding().getPath();
 			this.getRouter().getTargets().display("create", {
@@ -115,12 +87,12 @@ onEdit: function () {
 		 * @param {sap.ui.base.Event} oEvent pattern match event in route 'object'
 		 * @private
 		 */
-_onObjectMatched: function (oEvent) {
+		_onObjectMatched: function(oEvent) {
 			var oParameter = oEvent.getParameter("arguments");
 			for (var value in oParameter) {
 				oParameter[value] = decodeURIComponent(oParameter[value]);
 			}
-			this.getModel().metadataLoaded().then(function () {
+			this.getModel().metadataLoaded().then(function() {
 				var sObjectPath = this.getModel().createKey("GELENONAYSet", oParameter);
 				this._bindView("/" + sObjectPath);
 			}.bind(this));
@@ -132,19 +104,19 @@ _onObjectMatched: function (oEvent) {
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-_bindView: function (sObjectPath) {
+		_bindView: function(sObjectPath) {
 			// Set busy indicator during view binding
-var oViewModel = this.getModel("detailView");
+			var oViewModel = this.getModel("detailView");
 			// If the view was not bound yet its not busy, only if the binding requests data it is set to busy again
-oViewModel.setProperty("/busy", false);
+			oViewModel.setProperty("/busy", false);
 			this.getView().bindElement({
 				path: sObjectPath,
 				events: {
 					change: this._onBindingChange.bind(this),
-					dataRequested: function () {
+					dataRequested: function() {
 						oViewModel.setProperty("/busy", true);
 					},
-					dataReceived: function () {
+					dataReceived: function() {
 						oViewModel.setProperty("/busy", false);
 					}
 				}
@@ -155,23 +127,23 @@ oViewModel.setProperty("/busy", false);
 		 * @function
 		 * @private
 		 */
-_onBindingChange: function () {
-			var oView = this.getView(), 
-				oElementBinding = oView.getElementBinding(), 
-				oViewModel = this.getModel("detailView"), 
+		_onBindingChange: function() {
+			var oView = this.getView(),
+				oElementBinding = oView.getElementBinding(),
+				oViewModel = this.getModel("detailView"),
 				oAppViewModel = this.getModel("appView");
 			// No data for the binding
-if (!oElementBinding.getBoundContext()) {
+			if (!oElementBinding.getBoundContext()) {
 				this.getRouter().getTargets().display("detailObjectNotFound");
 				// if object could not be found, the selection in the master list
 				// does not make sense anymore.
-this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
 				return;
 			}
-			var sPath = oElementBinding.getBoundContext().getPath(), 
-				oResourceBundle = this.getResourceBundle(), 
-				oObject = oView.getModel().getObject(sPath), 
-				sObjectId = oObject.Prnum, 
+			var sPath = oElementBinding.getBoundContext().getPath(),
+				oResourceBundle = this.getResourceBundle(),
+				oObject = oView.getModel().getObject(sPath),
+				sObjectId = oObject.Prnum,
 				sObjectName = oObject.Chtam;
 			oViewModel.setProperty("/sObjectId", sObjectId);
 			oViewModel.setProperty("/sObjectPath", sPath);
@@ -191,21 +163,24 @@ this.getOwnerComponent().oListSelector.clearMasterListSelection();
 		 * @function
 		 * @private
 		 */
-_onMetadataLoaded: function () {
+		_onMetadataLoaded: function() {
 			// Store original busy indicator delay for the detail view
-var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(), oViewModel = this.getModel("detailView"), oLineItemTable = this.byId("lineItemsList"), iOriginalLineItemTableBusyDelay = oLineItemTable.getBusyIndicatorDelay();
+			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
+				oViewModel = this.getModel("detailView"),
+				oLineItemTable = this.byId("lineItemsList"),
+				iOriginalLineItemTableBusyDelay = oLineItemTable.getBusyIndicatorDelay();
 			// Make sure busy indicator is displayed immediately when
 			// detail view is displayed for the first time
-oViewModel.setProperty("/delay", 0);
+			oViewModel.setProperty("/delay", 0);
 			oViewModel.setProperty("/lineItemTableDelay", 0);
-			oLineItemTable.attachEventOnce("updateFinished", function () {
+			oLineItemTable.attachEventOnce("updateFinished", function() {
 				// Restore original busy indicator delay for line item table
-oViewModel.setProperty("/lineItemTableDelay", iOriginalLineItemTableBusyDelay);
+				oViewModel.setProperty("/lineItemTableDelay", iOriginalLineItemTableBusyDelay);
 			});
 			// Binding the view will set it to not busy - so the view is always busy if it is not bound
-oViewModel.setProperty("/busy", true);
+			oViewModel.setProperty("/busy", true);
 			// Restore original busy indicator delay for the detail view
-oViewModel.setProperty("/delay", iOriginalViewBusyDelay);
+			oViewModel.setProperty("/delay", iOriginalViewBusyDelay);
 		},
 		/**
 		 * Opens a dialog letting the user either confirm or cancel the deletion of a list of entities
@@ -221,22 +196,22 @@ oViewModel.setProperty("/delay", iOriginalViewBusyDelay);
 		 */
 		/* eslint-disable */
 		// using more then 4 parameters for a function is justified here
-_confirmDeletionByUser: function (oConfirmation, aPaths, fnAfterDeleted, fnDeleteCanceled, fnDeleteConfirmed) {
+		_confirmDeletionByUser: function(oConfirmation, aPaths, fnAfterDeleted, fnDeleteCanceled, fnDeleteConfirmed) {
 			/* eslint-enable */
 			// Callback function for when the user decides to perform the deletion
-var fnDelete = function () {
+			var fnDelete = function() {
 				// Calls the oData Delete service
-this._callDelete(aPaths, fnAfterDeleted);
+				this._callDelete(aPaths, fnAfterDeleted);
 			}.bind(this);
 			// Opens the confirmation dialog
-MessageBox.show(oConfirmation.question, {
+			MessageBox.show(oConfirmation.question, {
 				icon: oConfirmation.icon || MessageBox.Icon.WARNING,
 				title: oConfirmation.title || this._oResourceBundle.getText("delete"),
 				actions: [
 					MessageBox.Action.OK,
 					MessageBox.Action.CANCEL
 				],
-				onClose: function (oAction) {
+				onClose: function(oAction) {
 					if (oAction === MessageBox.Action.OK) {
 						fnDelete();
 					} else if (fnDeleteCanceled) {
@@ -253,13 +228,13 @@ MessageBox.show(oConfirmation.question, {
 		 * @function
 		 * @private
 		 */
-_callDelete: function (aPaths, fnAfterDeleted) {
+		_callDelete: function(aPaths, fnAfterDeleted) {
 			var oViewModel = this.getModel("detailView");
 			oViewModel.setProperty("/busy", true);
-			var fnFailed = function () {
+			var fnFailed = function() {
 				this._oODataModel.setUseBatch(true);
 			}.bind(this);
-			var fnSuccess = function () {
+			var fnSuccess = function() {
 				if (fnAfterDeleted) {
 					fnAfterDeleted();
 					this._oODataModel.setUseBatch(true);
@@ -276,8 +251,8 @@ _callDelete: function (aPaths, fnAfterDeleted) {
 		 * @function
 		 * @private
 		 */
-_deleteOneEntity: function (sPath, fnSuccess, fnFailed) {
-			var oPromise = new Promise(function (fnResolve, fnReject) {
+		_deleteOneEntity: function(sPath, fnSuccess, fnFailed) {
+			var oPromise = new Promise(function(fnResolve, fnReject) {
 				this._oODataModel.setUseBatch(false);
 				this._oODataModel.remove(sPath, {
 					success: fnResolve,
@@ -289,23 +264,83 @@ _deleteOneEntity: function (sPath, fnSuccess, fnFailed) {
 			return oPromise;
 		},
 		/**
-	*@memberOf ZINE.controller.Detail
-	*/
+		 *@memberOf ZINE.controller.Detail
+		 */
 
-PDFview: function () {
+		onAprove: function() {
+			var that = this;
+			var oBusyDialog = new sap.m.BusyDialog();
+			oBusyDialog.open();
+			this.oCurrentItemData.byId('EstatTx') = 'ONAY';
+			this.oModel.update(this.sEntityPath, this.oCurrentItemData, {
+				async: true,
+				success: function(oData, response) {
+					oBusyDialog.close();
+					//that.showPopup("Item data has been saved");
+				},
+				error: function(oError) {
+
+					oBusyDialog.close();
+					console.log(oError.message);
+				}
+			});
+		},
+
+		onReject: function() {
+			var that = this;
+			var oBusyDialog = new sap.m.BusyDialog();
+			oBusyDialog.open();
+			this.oCurrentItemData = this.getView().getBindingContext().getObject();
+			this.oCurrentItemData.EstatTx = 'RED';
+			this.updateModel();
+
+			this.oCurrentItemData.byId('EstatTx') = 'RED';
+			this.oModel.update(this.sEntityPath, this.oCurrentItemData, {
+				async: true,
+				success: function(oData, response) {
+					oBusyDialog.close();
+					//that.showPopup("Item data has been saved");
+				},
+				error: function(oError) {
+
+					oBusyDialog.close();
+					console.log(oError.message);
+				}
+			});
+		},
+
+		PDFview: function() {
 			var oViewModel = this.getModel("detailView");
 			var sUrl = oViewModel.getProperty("/sObjectPath");
-			var oData = oViewModel.getObject(sUrl); 
+			var oData = oViewModel.getObject(sUrl);
 			oData.EstatTx = "PDFSHOW";
-			 this._oODataModel.update(sUrl, oData, {
-			 		        merge: true,
-			success : jQuery.proxy(function(mResponse) {
-				MessageBox.show("success");
-			}, this),
-			error : jQuery.proxy(function(mResponse) {
-				MessageBox.show("error");
-			}, this)
-		});
+			this._oODataModel.update(sUrl, oData, {
+				merge: true,
+				success: jQuery.proxy(function(mResponse) {
+					MessageBox.show("success");
+				}, this),
+				error: jQuery.proxy(function(mResponse) {
+					MessageBox.show("error");
+				}, this)
+			});
+		},
+		updateModel: function() {
+			var that = this;
+			var oBusyDialog = new sap.m.BusyDialog();
+			oBusyDialog.open();
+			this.oModel.update(this.sEntityPath, this.oCurrentItemData, {
+				async: true,
+				success: function(oData, response) {
+					oBusyDialog.close();
+					that.showPopup("Item data has been saved");
+				},
+				error: function(oError) {
+
+					oBusyDialog.close();
+					alert(oError.message);
+				}
+			});
 		}
+
 	});
 });
