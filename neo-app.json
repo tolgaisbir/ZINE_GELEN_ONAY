@@ -40,10 +40,10 @@
       "path": "/sap/opu/odata",
       "target": {
         "type": "destination",
-        "name": "IDD",
+        "name": "IDS",
         "entryPath": "/sap/opu/odata"
       },
-      "description": "INNOVA IDD"
+      "description": "INNOVA IDS"
     }
   ],
   "welcomeFile": "/webapp/test/flpSandbox.html",
