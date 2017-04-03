@@ -25,7 +25,11 @@
         "id": 1978925,
         "runnerId": "webapprunner",
         "displayName": "App in FLP Sandbox",
+<<<<<<< HEAD
+        "lastRunTimeStamp": 1490713124211
+=======
         "lastRunTimeStamp": 1490706830037
+>>>>>>> branch 'master' of https://github.com/tolgaisbir/ZINE_GELEN_ONAY
       }
     },
     {
